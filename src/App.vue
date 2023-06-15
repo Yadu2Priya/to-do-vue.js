@@ -61,7 +61,7 @@
         </div>
       </div>
       <!-- Task cards -->
-      <div class="row">
+      <div class="row justify-content-center">
         <div v-if="searchTasks.length > 0" class="row">
           <div class="col-md-4" v-for="task in searchTasks" :key="task.id">
             <div class="card">
@@ -77,7 +77,7 @@
                   v-if="activePage === 'Archive'"
                   @click="deleteTaskFromArchive(task)"
                   class="bi bi-trash-fill delete-icon"
-                  style="color: grey; margin-left: 10px"
+                  style="color: grey;"
                 ></i>
               </div>
             </div>
