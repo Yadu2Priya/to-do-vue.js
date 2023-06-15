@@ -47,7 +47,7 @@
               Add
             </button>
           </div>
-          <h4>{{ headline }}</h4>
+          <h4>{{ taskCount }}</h4>
           <!-- Search input -->
           <div class="col-md-7 mb-2">
             <input
@@ -82,12 +82,11 @@
             </div>
           </div>
         </div>
-        <div v-else style="margin-left:10px;">No tasks available</div>
+        <div v-else style="margin-left:10px;">No task available</div>
       </div>
     </main>
   </div>
 </template>
-
 <script>
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios"; //Axios library for HTTP requests
@@ -105,7 +104,7 @@ export default {
     };
   },
   computed: {
-    headline() {
+    taskCount() {
       if (this.activePage === "MyTasks") {
         return `${this.searchTasks.length} Open Tasks`; // Display the number of open tasks
       } else if (this.activePage === "Archive") {
@@ -137,7 +136,9 @@ export default {
   },
   created() {
     this.fetchTasks(); // Fetch tasks when the component is created
+        this.activePage = localStorage.getItem("activePage") || "MyTasks"; // Retrieve the activePage from local storage or set it to "MyTasks" if not found
     window.addEventListener("resize", this.handleScreenSize); // Add resize event listener to handle screen width changes
+
   },
   destroyed() {
     window.removeEventListener("resize", this.handleScreenSize); // Remove resize event listener when the component is destroyed
@@ -207,10 +208,11 @@ export default {
     },
     changePage(page) {
       this.activePage = page; // Change the active page
+            localStorage.setItem("activePage", page); // Store the activePage in local storage
     },
     handleScreenSize() {
       this.screenWidth = window.innerWidth;
     },
   },
 };
-</script>
+</script> 
