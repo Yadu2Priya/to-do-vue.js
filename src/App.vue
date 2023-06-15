@@ -1,9 +1,10 @@
 <template>
   <div>
+        <!-- Nav bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <i class="bi bi-journal-text text-white mr-2 logo-icon"></i>
-    <!-- <h3 class="navbar-brand">To Do App</h3> -->
   <ul class="navbar-nav">
+            <!--highlighting Active page  -->
     <li class="nav-item" :class="{ active: activePage === 'MyTasks' }">
       <a class="nav-link clickable" @click="changePage('MyTasks')">My Tasks</a>
     </li>
@@ -11,7 +12,8 @@
       <a class="nav-link clickable" @click="changePage('Archive')">Archive</a>
     </li>
   </ul>
-  <div class="d-flex align-items-center">
+      <!-- User icon nd name -->
+   <div class="d-flex align-items-center">
     <i class="bi bi-person-circle mr-2" style="color: grey;"></i>
     <span class="username text-white" style="margin-left: 10px;">{{ displayUsername }}</span> 
    </div>
@@ -41,18 +43,20 @@
             
           </div>
           <h4>{{ headline }}</h4>
+                    <!-- Search input -->
           <div class="col-md-7 mb-2">
             <input
               v-model="searchValue"
               type="text"
               class="form-control"
-              placeholder="Search tasks"
+              placeholder="Search task"
             />
           </div>
         </div>
       </div>
+            <!-- Task cards -->
       <div class="row">
-        <div class="col-md-4" v-for="task in filteredTasks" :key="task.id">
+        <div class="col-md-4" v-for="task in searchTasks" :key="task.id">
           <div class="card">
             <div class="card-body">
               <input
@@ -65,7 +69,7 @@
               <i
                 v-if="activePage === 'Archive'"
                 @click="deleteTaskFromArchive(task)"
-                class="bi bi-trash-fill delete-icon"
+                class="bi bi-trash-fill delete-icon" style="color: grey;margin-left: 10px;"
               ></i>
             </div>
           </div>
@@ -78,15 +82,15 @@
 
 <script>
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import axios from "axios";
+import axios from "axios"; //Axios library for HTTP requests
 
 export default {
   data() {
     return {
-      activePage: "MyTasks",
-      username: "David Muller",
-      tasks: [],
-      archiveTasks: [],
+      activePage: "MyTasks", // Current active page
+      username: "Priya Priya",
+      tasks: [], // Array to store tasks
+      archiveTasks: [], // Array to store archived tasks
       newTaskText: "",
       searchValue: "",
       screenWidth: window.innerWidth,
@@ -95,21 +99,21 @@ export default {
   computed: {
     headline() {
       if (this.activePage === "MyTasks") {
-        return `${this.filteredTasks.length} Open Tasks`;
+        return `${this.searchTasks.length} Open Tasks`; // Display the number of open tasks
       } else if (this.activePage === "Archive") {
-        return `${this.archiveTasks.length} Completed Tasks`;
+        return `${this.archiveTasks.length} Completed Tasks`; // Display the number of completed tasks
       }
     },
-    filteredTasks() {
+    searchTasks() {
       const query = this.searchValue.toLowerCase();
       if (this.activePage === "MyTasks") {
         return this.tasks.filter(
           (task) => !task.completed && task.title.toLowerCase().includes(query)
-        );
+        ); // Filter open tasks that match the search query
       } else if (this.activePage === "Archive") {
         return this.archiveTasks.filter((task) =>
           task.title.toLowerCase().includes(query)
-        );
+        ); // Filter completed tasks that match the search query
       }
     },
     displayUsername() {
@@ -117,36 +121,36 @@ export default {
         return this.username
           .split(" ")
           .map((word) => word.charAt(0))
-          .join("");
+          .join(""); // display initial of username if the screen width is less than 640px
       } else {
         return this.username;
       }
     },
   },
   created() {
-    this.fetchTasks();
-    window.addEventListener("resize", this.handleResize);
+    this.fetchTasks(); // Fetch tasks when the component is created
+    window.addEventListener("resize", this.handleScreenSize); // Add resize event listener to handle screen width changes
   },
   destroyed() {
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("resize", this.handleScreenSize); // Remove resize event listener when the component is destroyed
   },
   methods: {
     fetchTasks() {
       const storedTasks = localStorage.getItem('tasks');
       const storedArchiveTasks = localStorage.getItem('archiveTasks');
       if (storedTasks) {
-        this.tasks = JSON.parse(storedTasks);
+        this.tasks = JSON.parse(storedTasks); // Retrieve tasks from localStorage if available
       }
       if (storedArchiveTasks) {
-        this.archiveTasks = JSON.parse(storedArchiveTasks);
+        this.archiveTasks = JSON.parse(storedArchiveTasks); // Retrieve archived tasks from localStorage if available
       }
       if (!storedTasks || !storedArchiveTasks) {
         axios
           .get("http://jsonplaceholder.typicode.com/todos?userId=1")
           .then((response) => {
-            this.tasks = response.data.filter((task) => !task.completed);
-            this.archiveTasks = response.data.filter((task) => task.completed);
-            localStorage.setItem('tasks', JSON.stringify(this.tasks));
+            this.tasks = response.data.filter((task) => !task.completed); // Set tasks to open tasks from the API response
+            this.archiveTasks = response.data.filter((task) => task.completed); // Set archiveTasks to completed tasks from the API response
+            localStorage.setItem('tasks', JSON.stringify(this.tasks)); // Store tasks in localStorage
             localStorage.setItem('archiveTasks', JSON.stringify(this.archiveTasks));
           })
           .catch((error) => {
@@ -162,34 +166,34 @@ export default {
           title: this.newTaskText.trim(),
           completed: false,
         };
-        this.tasks.unshift(newTask);
-        this.newTaskText = "";
+        this.tasks.unshift(newTask); // Add new task to the tasks array
+        this.newTaskText = ""; // Clear new task input
 
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+        localStorage.setItem('tasks', JSON.stringify(this.tasks)); // Update tasks in localStorage
       }
     },
     deleteTaskFromArchive(task) {
       if (confirm("Are you sure you want to permanently delete this task from the archive?")) {
         this.archiveTasks = this.archiveTasks.filter((t) => t !== task);
-        localStorage.setItem("archiveTasks", JSON.stringify(this.archiveTasks));
+        localStorage.setItem("archiveTasks", JSON.stringify(this.archiveTasks)); // Update archived tasks in localStorage
       }
     },
     toggleTask(task) {
       if (task.completed) {
-        this.tasks = this.tasks.filter((t) => t !== task);
-        this.archiveTasks.unshift(task);
+        this.tasks = this.tasks.filter((t) => t !== task); // Remove the task from the tasks array
+        this.archiveTasks.unshift(task); // Add the task to the beginning of the archiveTasks array
       } else {
-        this.tasks.unshift(task);
-        this.archiveTasks = this.archiveTasks.filter((t) => t !== task);
+        this.tasks.unshift(task);  // Add the task to the beginning of the tasks array
+        this.archiveTasks = this.archiveTasks.filter((t) => t !== task); // Remove the task from the archiveTasks array
       }
 
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      localStorage.setItem('tasks', JSON.stringify(this.tasks)); // Update tasks
       localStorage.setItem('archiveTasks', JSON.stringify(this.archiveTasks));
     },
     changePage(page) {
-      this.activePage = page;
+      this.activePage = page; // Change the active page 
     },
-    handleResize() {
+    handleScreenSize() {
       this.screenWidth = window.innerWidth;
     },
   },
