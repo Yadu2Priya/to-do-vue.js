@@ -9,6 +9,7 @@
           <a class="nav-link clickable" @click="changePage('MyTasks')"
             >My Tasks</a
           >
+          
         </li>
         <li class="nav-item" :class="{ active: activePage === 'Archive' }">
           <a class="nav-link clickable" @click="changePage('Archive')"
@@ -18,7 +19,7 @@
       </ul>
       <!-- User icon nd name -->
       <div class="d-flex align-items-center">
-        <i class="bi bi-person-circle mr-2" style="color: grey"></i>
+        <i class="bi bi-person-circle mr-2" style="color: lightgray"></i>
         <span class="username text-white" style="margin-left: 10px">{{
           displayUsername
         }}</span>
@@ -82,7 +83,7 @@
             </div>
           </div>
         </div>
-        <div v-else style="margin-left:10px;">No task available</div>
+        <div v-else style="margin-left: 10px">No task available</div>
       </div>
     </main>
   </div>
@@ -136,9 +137,8 @@ export default {
   },
   created() {
     this.fetchTasks(); // Fetch tasks when the component is created
-        this.activePage = localStorage.getItem("activePage") || "MyTasks"; // Retrieve the activePage from local storage or set it to "MyTasks" if not found
+    this.activePage = localStorage.getItem("activePage") || "MyTasks"; // Retrieve the activePage from local storage or set it to "MyTasks" if not found
     window.addEventListener("resize", this.handleScreenSize); // Add resize event listener to handle screen width changes
-
   },
   destroyed() {
     window.removeEventListener("resize", this.handleScreenSize); // Remove resize event listener when the component is destroyed
@@ -208,11 +208,11 @@ export default {
     },
     changePage(page) {
       this.activePage = page; // Change the active page
-            localStorage.setItem("activePage", page); // Store the activePage in local storage
+      localStorage.setItem("activePage", page); // Store the activePage in local storage
     },
     handleScreenSize() {
       this.screenWidth = window.innerWidth;
     },
   },
 };
-</script> 
+</script>
